@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 5,
+            "activePatchIndex": 6,
             "patches": [
                 {
                     "date": 1767793546326,
@@ -28,6 +28,10 @@
                 {
                     "date": 1767795709886,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -125,9 +125,9 @@\n     return await toggleClickupTimer()\r\n   })\r\n \r\n   // Global hotkey (main process)\r\n-  const ok = globalShortcut.register('CommandOrControl+Insert', async () => {\r\n+  const ok = globalShortcut.register('CommandOrControl+Shift+Alt+t', async () => {\r\n     try {\r\n       const r = await toggleClickupTimer()\r\n       win?.webContents?.send('clickup:status', r)\r\n     } catch (e) {\r\n"
+                },
+                {
+                    "date": 1767800567862,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,50 @@\n const { app, BrowserWindow, ipcMain, globalShortcut } = require('electron/main')\r\n const path = require('node:path')\r\n \r\n+const { app, BrowserWindow, Tray, nativeImage } = require('electron')\r\n+const path = require('node:path')\r\n+\r\n+let tray\r\n+\r\n+function img(p) {\r\n+  // NativeImage can be created from a path (png/jpg/etc). :contentReference[oaicite:3]{index=3}\r\n+  return nativeImage.createFromPath(p)\r\n+}\r\n+\r\n+// Put these files somewhere you ship with the app, e.g. ./assets/\r\n+const ICON_IDLE_32 = path.join(__dirname, 'assets', 'tray-idle.png')\r\n+const ICON_RUN_32 = path.join(__dirname, 'assets', 'tray-running.png')\r\n+const OVERLAY_IDLE_16 = path.join(__dirname, 'assets', 'overlay-idle-16.png')\r\n+const OVERLAY_RUN_16 = path.join(__dirname, 'assets', 'overlay-running-16.png')\r\n+\r\n+function ensureTray() {\r\n+  if (tray) return\r\n+  tray = new Tray(ICON_IDLE_32)\r\n+}\r\n+\r\n+function setTimerIndicators({ running }, win) {\r\n+  ensureTray()\r\n+\r\n+  // 1) Tray icon (cross-platform)\r\n+  // tray.setImage(image) updates the tray icon. :contentReference[oaicite:4]{index=4}\r\n+  tray.setImage(running ? ICON_RUN_32 : ICON_IDLE_32)\r\n+\r\n+  // 2) Windows taskbar overlay badge (Windows only)\r\n+  // win.setOverlayIcon(overlay, description) :contentReference[oaicite:5]{index=5}\r\n+  if (process.platform === 'win32' && win) {\r\n+    const overlay = running ? img(OVERLAY_RUN_16) : null // null clears overlay :contentReference[oaicite:6]{index=6}\r\n+    win.setOverlayIcon(overlay, running ? 'Timer running' : 'Timer stopped')\r\n+  }\r\n+\r\n+  // 3) macOS Dock icon (macOS only)\r\n+  // app.dock.setIcon(image) :contentReference[oaicite:7]{index=7}\r\n+  if (process.platform === 'darwin') {\r\n+    app.dock.setIcon(running ? ICON_RUN_32 : ICON_IDLE_32)\r\n+  }\r\n+}\r\n+\r\n+\r\n const BASE = 'https://api.clickup.com/api/v2'\r\n \r\n function mustEnv(name) {\r\n   const v = (process.env[name] || '').trim()\r\n"
                 }
             ],
             "date": 1767793546326,

@@ -1,5 +1,44 @@
-const { app, BrowserWindow, ipcMain, globalShortcut } = require('electron/main')
+const { app, BrowserWindow, ipcMain, globalShortcut, Tray, nativeImage } = require('electron/main')
 const path = require('node:path')
+
+let tray
+
+function img(p) {
+  // NativeImage can be created from a path (png/jpg/etc). :contentReference[oaicite:3]{index=3}
+  return nativeImage.createFromPath(p)
+}
+
+// Put these files somewhere you ship with the app, e.g. ./assets/
+const ICON_IDLE_32 = path.join(__dirname, 'assets', 'norm.png')
+const ICON_RUN_32 = path.join(__dirname, 'assets', 'act.png')
+const OVERLAY_IDLE_16 = path.join(__dirname, 'assets', 'norm.png')
+const OVERLAY_RUN_16 = path.join(__dirname, 'assets', 'act.png')
+
+function ensureTray() {
+  if (tray) return
+  tray = new Tray(ICON_IDLE_32)
+}
+
+function setTimerIndicators({ running }, win) {
+  ensureTray()
+
+  // 1) Tray icon (cross-platform)
+  // tray.setImage(image) updates the tray icon. :contentReference[oaicite:4]{index=4}
+  tray.setImage(running ? ICON_RUN_32 : ICON_IDLE_32)
+
+  // 2) Windows taskbar overlay badge (Windows only)
+  // win.setOverlayIcon(overlay, description) :contentReference[oaicite:5]{index=5}
+  if (process.platform === 'win32' && win) {
+    const overlay = running ? img(OVERLAY_RUN_16) : null // null clears overlay :contentReference[oaicite:6]{index=6}
+    win.setOverlayIcon(overlay, running ? 'Timer running' : 'Timer stopped')
+  }
+
+  // 3) macOS Dock icon (macOS only)
+  // app.dock.setIcon(image) :contentReference[oaicite:7]{index=7}
+  if (process.platform === 'darwin') {
+    app.dock.setIcon(running ? ICON_RUN_32 : ICON_IDLE_32)
+  }
+}
 
 const BASE = 'https://api.clickup.com/api/v2'
 
@@ -108,6 +147,7 @@ function createWindow() {
   win = new BrowserWindow({
     width: 420,
     height: 220,
+    icon: ICON_IDLE_32,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -119,6 +159,10 @@ function createWindow() {
 
 app.whenReady().then(() => {
   createWindow()
+  
+  // Initialize tray on startup
+  ensureTray()
+  setTimerIndicators({ running: false }, win)
 
   // IPC handler (renderer -> main)
   ipcMain.handle('clickup:toggleTimer', async () => {
@@ -129,6 +173,7 @@ app.whenReady().then(() => {
   const ok = globalShortcut.register('CommandOrControl+Shift+Alt+t', async () => {
     try {
       const r = await toggleClickupTimer()
+      setTimerIndicators({ running: r.action === 'started' }, win)
       win?.webContents?.send('clickup:status', r)
     } catch (e) {
       win?.webContents?.send('clickup:status', { action: 'error', task_name: String(e?.message || e) })
