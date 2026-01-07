@@ -3,11 +3,15 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 1,
             "patches": [
                 {
                     "date": 1767793557431,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1767806374674,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,11 @@\n const { contextBridge, ipcRenderer } = require('electron')\r\n \r\n contextBridge.exposeInMainWorld('clickup', {\r\n   toggleTimer: () => ipcRenderer.invoke('clickup:toggleTimer'),\r\n+  getEntries: () => ipcRenderer.invoke('clickup:getEntries'),\r\n+  getCurrentEntry: () => ipcRenderer.invoke('clickup:getCurrentEntry'),\r\n+  startTask: (tid) => ipcRenderer.invoke('clickup:startTask', tid),\r\n+  stopTimer: () => ipcRenderer.invoke('clickup:stopTimer'),\r\n+  deleteEntry: (entryId) => ipcRenderer.invoke('clickup:deleteEntry', entryId),\r\n   onStatus: (cb) => ipcRenderer.on('clickup:status', (_evt, payload) => cb(payload)),\r\n })\r\n"
                 }
             ],
             "date": 1767793557431,

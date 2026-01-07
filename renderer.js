@@ -50,7 +50,7 @@ function getPSTDateString(ms) {
     timeZone: 'America/Los_Angeles',
     weekday: 'short',
     month: 'short',
-    day: 'numeric'
+    day: 'numeric',
   })
 }
 
@@ -69,7 +69,7 @@ function renderTasks() {
   let displayEntries = entries
   if (hideDailyDuplicates) {
     const seenPerDay = new Map() // day -> Set of task_ids
-    displayEntries = entries.filter(entry => {
+    displayEntries = entries.filter((entry) => {
       const day = getPSTDateString(entry.startMs)
       if (!seenPerDay.has(day)) {
         seenPerDay.set(day, new Set())
@@ -86,9 +86,9 @@ function renderTasks() {
   let lastDay = null
   let html = ''
 
-  displayEntries.forEach(entry => {
+  displayEntries.forEach((entry) => {
     const entryDay = getPSTDateString(entry.startMs)
-    
+
     // Add day separator if day changed
     if (entryDay && entryDay !== lastDay) {
       html += `<div class="day-separator"><span class="day-label">${entryDay}</span></div>`
@@ -99,11 +99,11 @@ function renderTasks() {
     const btnClass = isRunning ? 'stop' : 'start'
     const btnIcon = isRunning ? '⏹' : '▶'
     const itemClass = isRunning ? 'task-item running' : 'task-item'
-    
+
     const startTime = formatTime(entry.startMs)
     const endTime = entry.isRunning ? 'running' : formatTime(entry.endMs)
     const lasted = entry.isRunning ? 'tracking...' : formatDuration(entry.duration)
-    
+
     html += `
       <div class="${itemClass}" data-task-id="${entry.task_id}" data-entry-id="${entry.entry_id}">
         <button class="task-btn ${btnClass}" data-task-id="${entry.task_id}" data-running="${isRunning}">
@@ -123,17 +123,17 @@ function renderTasks() {
   taskListEl.innerHTML = html
 
   // Attach click handlers
-  taskListEl.querySelectorAll('.task-btn').forEach(btn => {
+  taskListEl.querySelectorAll('.task-btn').forEach((btn) => {
     btn.addEventListener('click', handleTaskClick)
   })
 
   // Attach copy handlers to task content
-  taskListEl.querySelectorAll('.task-content').forEach(content => {
+  taskListEl.querySelectorAll('.task-content').forEach((content) => {
     content.addEventListener('click', handleCopyTaskUrl)
   })
 
   // Attach delete handlers
-  taskListEl.querySelectorAll('.task-delete').forEach(btn => {
+  taskListEl.querySelectorAll('.task-delete').forEach((btn) => {
     btn.addEventListener('click', handleDeleteEntry)
   })
 }
@@ -161,7 +161,7 @@ async function handleCopyTaskUrl(e) {
   if (!taskId) return
 
   const url = `https://app.clickup.com/t/${taskId}`
-  
+
   try {
     await navigator.clipboard.writeText(url)
     // Show copied feedback
@@ -199,32 +199,29 @@ async function refreshEntries() {
   try {
     statusEl.textContent = 'Refreshing...'
     statusEl.style.color = '#CAC4D0'
-    
-    const [entriesData, currentEntry] = await Promise.all([
-      window.clickup.getEntries(),
-      window.clickup.getCurrentEntry()
-    ])
-    
+
+    const [entriesData, currentEntry] = await Promise.all([window.clickup.getEntries(), window.clickup.getCurrentEntry()])
+
     entries = entriesData || []
     currentTaskId = currentEntry?.task_id || null
-    
+
     // Mark current entry as running
-    entries.forEach(e => {
+    entries.forEach((e) => {
       if (e.task_id === currentTaskId) {
         e.isRunning = true
       }
     })
-    
+
     renderTasks()
-    
+
     if (currentTaskId) {
-      const current = entries.find(e => e.task_id === currentTaskId)
+      const current = entries.find((e) => e.task_id === currentTaskId)
       statusEl.innerHTML = `<span class="current">▶ ${current?.task_name || 'Timer running'}</span>`
     } else {
       statusEl.textContent = 'No timer running'
     }
     statusEl.style.color = ''
-    
+
     // Reset refresh timer
     nextRefresh = Date.now() + REFRESH_MS
   } catch (err) {

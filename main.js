@@ -178,13 +178,13 @@ async function getTimeEntries() {
 
   const list = await clickupFetch('GET', `${BASE}/team/${teamId}/time_entries?start_date=${start30d}&end_date=${now}`)
   const entries = Array.isArray(list?.data) ? list.data : []
-  
+
   // Filter to task-backed entries and sort newest first
   const candidates = entries.filter((e) => taskId(e))
   candidates.sort((a, b) => parseStartMs(b) - parseStartMs(a))
-  
+
   // Map to simple entry objects
-  const result = candidates.slice(0, 100).map(entry => {
+  const result = candidates.slice(0, 100).map((entry) => {
     const duration = parseDuration(entry)
     const isRunning = duration < 0 || !parseEndMs(entry)
     return {
@@ -197,7 +197,7 @@ async function getTimeEntries() {
       isRunning,
     }
   })
-  
+
   return result
 }
 
@@ -220,13 +220,13 @@ async function getCurrentEntry() {
 
 async function startTask(tid) {
   const teamId = mustEnv('CLICKUP_TEAM_ID')
-  
+
   // First stop any running timer
   const current = await clickupFetch('GET', `${BASE}/team/${teamId}/time_entries/current`)
   if (current?.data?.id) {
     await clickupFetch('POST', `${BASE}/team/${teamId}/time_entries/stop`)
   }
-  
+
   // Start the new task
   const started = await clickupFetch('POST', `${BASE}/team/${teamId}/time_entries/start`, { tid })
   return {
