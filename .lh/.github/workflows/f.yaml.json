@@ -1,0 +1,18 @@
+{
+    "sourceFile": ".github/workflows/f.yaml",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1767806356653,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1767806356653,
+            "name": "Commit-0",
+            "content": "name: dist\r\non:\r\n  workflow_dispatch:\r\n  push:\r\n\r\njobs:\r\n  build:\r\n    strategy:\r\n      matrix:\r\n        os: [macos-latest, windows-latest, ubuntu-latest]\r\n    runs-on: ${{ matrix.os }}\r\n\r\n    steps:\r\n      - uses: actions/checkout@v4\r\n\r\n      - uses: actions/setup-node@v4\r\n        with:\r\n          node-version: 20\r\n          cache: npm\r\n\r\n      - run: npm ci\r\n\r\n      # .deb builds commonly need dpkg + fakeroot available on the runner\r\n      - name: Install deb deps\r\n        if: matrix.os == 'ubuntu-latest'\r\n        run: sudo apt-get update && sudo apt-get install -y dpkg fakeroot\r\n        # (These are documented requirements in common deb packaging flows)\r\n        # :contentReference[oaicite:3]{index=3}\r\n\r\n      - name: Build macOS (dmg)\r\n        if: matrix.os == 'macos-latest'\r\n        run: npm run dist:mac\r\n\r\n      - name: Build Windows (portable)\r\n        if: matrix.os == 'windows-latest'\r\n        run: npm run dist:win\r\n\r\n      - name: Build Linux (deb)\r\n        if: matrix.os == 'ubuntu-latest'\r\n        run: npm run dist:linux\r\n\r\n      - uses: actions/upload-artifact@v4\r\n        with:\r\n          name: dist-${{ matrix.os }}\r\n          path: dist/*\r\n"
+        }
+    ]
+}

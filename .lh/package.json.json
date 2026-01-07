@@ -3,11 +3,19 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 2,
             "patches": [
                 {
                     "date": 1767793515489,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1767806266930,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,12 @@\n   \"dependencies\": {\r\n     \"electron\": \"^39.2.7\"\r\n   },\r\n   \"scripts\": {\r\n-    \"start\": \"electron .\"\r\n+    \"start\": \"electron .\",\r\n+    \"dist:mac\": \"electron-builder --mac dmg --publish never\",\r\n+    \"dist:win\": \"electron-builder --win portable --publish never\",\r\n+    \"dist:linux\": \"electron-builder --linux deb --publish never\"\r\n   },\r\n   \"devDependencies\": {\r\n     \"electron\": \"^latest\"\r\n   }\r\n"
+                },
+                {
+                    "date": 1767806294573,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,8 +11,34 @@\n     \"dist:mac\": \"electron-builder --mac dmg --publish never\",\r\n     \"dist:win\": \"electron-builder --win portable --publish never\",\r\n     \"dist:linux\": \"electron-builder --linux deb --publish never\"\r\n   },\r\n+  \"build\": {\r\n+    \"appId\": \"com.yourcompany.clickup-timer\",\r\n+    \"productName\": \"ClickUp Timer Toggle\",\r\n+    \"directories\": {\r\n+      \"output\": \"dist\"\r\n+    },\r\n+    \"files\": [\r\n+      \"**/*\"\r\n+    ],\r\n+    \"mac\": {\r\n+      \"target\": [\r\n+        \"dmg\"\r\n+      ]\r\n+    },\r\n+    \"win\": {\r\n+      \"target\": [\r\n+        \"portable\"\r\n+      ]\r\n+    },\r\n+    \"linux\": {\r\n+      \"target\": [\r\n+        \"deb\"\r\n+      ],\r\n+      \"category\": \"Utility\"\r\n+    }\r\n+  },\r\n   \"devDependencies\": {\r\n     \"electron\": \"^latest\"\r\n   }\r\n }\r\n"
                 }
             ],
             "date": 1767793515489,

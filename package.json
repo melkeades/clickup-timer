@@ -7,7 +7,36 @@
     "electron": "^39.2.7"
   },
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "dist:mac": "electron-builder --mac dmg --publish never",
+    "dist:win": "electron-builder --win portable --publish never",
+    "dist:linux": "electron-builder --linux deb --publish never"
+  },
+  "build": {
+    "appId": "com.yourcompany.clickup-timer",
+    "productName": "ClickUp Timer Toggle",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*"
+    ],
+    "mac": {
+      "target": [
+        "dmg"
+      ]
+    },
+    "win": {
+      "target": [
+        "portable"
+      ]
+    },
+    "linux": {
+      "target": [
+        "deb"
+      ],
+      "category": "Utility"
+    }
   },
   "devDependencies": {
     "electron": "^latest"

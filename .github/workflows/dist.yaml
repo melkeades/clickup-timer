@@ -1,0 +1,45 @@
+name: dist
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # .deb builds commonly need dpkg + fakeroot available on the runner
+      - name: Install deb deps
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update && sudo apt-get install -y dpkg fakeroot
+        # (These are documented requirements in common deb packaging flows)
+        # :contentReference[oaicite:3]{index=3}
+
+      - name: Build macOS (dmg)
+        if: matrix.os == 'macos-latest'
+        run: npm run dist:mac
+
+      - name: Build Windows (portable)
+        if: matrix.os == 'windows-latest'
+        run: npm run dist:win
+
+      - name: Build Linux (deb)
+        if: matrix.os == 'ubuntu-latest'
+        run: npm run dist:linux
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ matrix.os }}
+          path: dist/*

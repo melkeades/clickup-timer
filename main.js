@@ -145,8 +145,8 @@ let win
 
 function createWindow() {
   win = new BrowserWindow({
-    width: 420,
-    height: 220,
+    width: 700,
+    height: 400,
     icon: ICON_IDLE_32,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -157,6 +157,95 @@ function createWindow() {
   win.loadFile('index.html')
 }
 
+function parseEndMs(entry) {
+  const v = entry?.end
+  if (typeof v === 'number') return v
+  if (typeof v === 'string' && /^\d+$/.test(v)) return Number(v)
+  return 0
+}
+
+function parseDuration(entry) {
+  const v = entry?.duration
+  if (typeof v === 'number') return v
+  if (typeof v === 'string' && /^-?\d+$/.test(v)) return Number(v)
+  return 0
+}
+
+async function getTimeEntries() {
+  const teamId = mustEnv('CLICKUP_TEAM_ID')
+  const now = Date.now()
+  const start30d = now - 30 * 24 * 60 * 60 * 1000
+
+  const list = await clickupFetch('GET', `${BASE}/team/${teamId}/time_entries?start_date=${start30d}&end_date=${now}`)
+  const entries = Array.isArray(list?.data) ? list.data : []
+  
+  // Filter to task-backed entries and sort newest first
+  const candidates = entries.filter((e) => taskId(e))
+  candidates.sort((a, b) => parseStartMs(b) - parseStartMs(a))
+  
+  // Map to simple entry objects
+  const result = candidates.slice(0, 100).map(entry => {
+    const duration = parseDuration(entry)
+    const isRunning = duration < 0 || !parseEndMs(entry)
+    return {
+      entry_id: entry.id,
+      task_id: taskId(entry),
+      task_name: taskName(entry),
+      startMs: parseStartMs(entry),
+      endMs: parseEndMs(entry),
+      duration: Math.abs(duration),
+      isRunning,
+    }
+  })
+  
+  return result
+}
+
+async function deleteEntry(entryId) {
+  const teamId = mustEnv('CLICKUP_TEAM_ID')
+  await clickupFetch('DELETE', `${BASE}/team/${teamId}/time_entries/${entryId}`)
+  return { action: 'deleted', entry_id: entryId }
+}
+
+async function getCurrentEntry() {
+  const teamId = mustEnv('CLICKUP_TEAM_ID')
+  const current = await clickupFetch('GET', `${BASE}/team/${teamId}/time_entries/current`)
+  if (!current?.data?.id) return null
+  return {
+    task_id: taskId(current.data),
+    task_name: taskName(current.data),
+    startMs: parseStartMs(current.data),
+  }
+}
+
+async function startTask(tid) {
+  const teamId = mustEnv('CLICKUP_TEAM_ID')
+  
+  // First stop any running timer
+  const current = await clickupFetch('GET', `${BASE}/team/${teamId}/time_entries/current`)
+  if (current?.data?.id) {
+    await clickupFetch('POST', `${BASE}/team/${teamId}/time_entries/stop`)
+  }
+  
+  // Start the new task
+  const started = await clickupFetch('POST', `${BASE}/team/${teamId}/time_entries/start`, { tid })
+  return {
+    action: 'started',
+    task_id: taskId(started?.data) ?? tid,
+    task_name: taskName(started?.data) ?? null,
+  }
+}
+
+async function stopTimer() {
+  const teamId = mustEnv('CLICKUP_TEAM_ID')
+  const stopped = await clickupFetch('POST', `${BASE}/team/${teamId}/time_entries/stop`)
+  return {
+    action: 'stopped',
+    task_id: taskId(stopped?.data) ?? null,
+    task_name: taskName(stopped?.data) ?? null,
+  }
+}
+
 app.whenReady().then(() => {
   createWindow()
 
@@ -164,9 +253,33 @@ app.whenReady().then(() => {
   ensureTray()
   setTimerIndicators({ running: false }, win)
 
-  // IPC handler (renderer -> main)
+  // IPC handlers (renderer -> main)
   ipcMain.handle('clickup:toggleTimer', async () => {
     return await toggleClickupTimer()
+  })
+
+  ipcMain.handle('clickup:getEntries', async () => {
+    return await getTimeEntries()
+  })
+
+  ipcMain.handle('clickup:getCurrentEntry', async () => {
+    return await getCurrentEntry()
+  })
+
+  ipcMain.handle('clickup:startTask', async (_event, tid) => {
+    const result = await startTask(tid)
+    setTimerIndicators({ running: true }, win)
+    return result
+  })
+
+  ipcMain.handle('clickup:stopTimer', async () => {
+    const result = await stopTimer()
+    setTimerIndicators({ running: false }, win)
+    return result
+  })
+
+  ipcMain.handle('clickup:deleteEntry', async (_event, entryId) => {
+    return await deleteEntry(entryId)
   })
 
   // Global hotkey (main process)
