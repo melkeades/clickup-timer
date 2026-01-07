@@ -1,0 +1,18 @@
+{
+    "sourceFile": "package.json",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1767793515489,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1767793515489,
+            "name": "Commit-0",
+            "content": "{\r\n  \"name\": \"clickup-timer\",\r\n  \"version\": \"1.0.0\",\r\n  \"main\": \"main.js\",\r\n  \"license\": \"MIT\",\r\n  \"dependencies\": {\r\n    \"electron\": \"^39.2.7\"\r\n  },\r\n  \"scripts\": {\r\n    \"start\": \"electron .\"\r\n  },\r\n  \"devDependencies\": {\r\n    \"electron\": \"^latest\"\r\n  }\r\n}\r\n"
+        }
+    ]
+}

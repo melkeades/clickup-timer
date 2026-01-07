@@ -1,0 +1,18 @@
+{
+    "sourceFile": "render.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1767793575506,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1767793575506,
+            "name": "Commit-0",
+            "content": "const out = document.getElementById('out')\r\nconst btn = document.getElementById('toggle')\r\n\r\nfunction show(r) {\r\n  if (!r) return\r\n  if (r.action === 'started') out.textContent = `✓ started: ${r.task_name || ''} (${r.task_id || ''})`\r\n  else if (r.action === 'stopped') out.textContent = `✓ stopped: ${r.task_name || ''} (${r.task_id || ''})`\r\n  else out.textContent = `✗ ${r.task_name || 'error'}`\r\n}\r\n\r\nbtn.addEventListener('click', async () => {\r\n  try {\r\n    const r = await window.clickup.toggleTimer()\r\n    show(r)\r\n  } catch (e) {\r\n    show({ action: 'error', task_name: String(e?.message || e) })\r\n  }\r\n})\r\n\r\nwindow.clickup.onStatus(show)\r\n"
+        }
+    ]
+}

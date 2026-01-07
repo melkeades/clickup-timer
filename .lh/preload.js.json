@@ -1,0 +1,18 @@
+{
+    "sourceFile": "preload.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1767793557431,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1767793557431,
+            "name": "Commit-0",
+            "content": "const { contextBridge, ipcRenderer } = require('electron')\r\n\r\ncontextBridge.exposeInMainWorld('clickup', {\r\n  toggleTimer: () => ipcRenderer.invoke('clickup:toggleTimer'),\r\n  onStatus: (cb) => ipcRenderer.on('clickup:status', (_evt, payload) => cb(payload)),\r\n})\r\n"
+        }
+    ]
+}

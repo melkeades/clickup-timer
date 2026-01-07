@@ -1,0 +1,18 @@
+{
+    "sourceFile": "index.html",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1767793566655,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1767793566655,
+            "name": "Commit-0",
+            "content": "<!doctype html>\r\n<html>\r\n  <head>\r\n    <meta charset=\"utf-8\" />\r\n    <title>ClickUp Timer Toggle</title>\r\n  </head>\r\n  <body>\r\n    <h3>ClickUp Timer Toggle</h3>\r\n    <button id=\"toggle\">Toggle (Ctrl/Cmd+Shift+T)</button>\r\n    <pre id=\"out\"></pre>\r\n    <script src=\"./renderer.js\"></script>\r\n  </body>\r\n</html>\r\n"
+        }
+    ]
+}
