@@ -1,0 +1,9 @@
+{
+  "name": "clickup-timer",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "electron": "^39.2.7"
+  }
+}
