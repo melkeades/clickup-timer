@@ -159,7 +159,7 @@ function createWindow() {
 
 app.whenReady().then(() => {
   createWindow()
-  
+
   // Initialize tray on startup
   ensureTray()
   setTimerIndicators({ running: false }, win)
