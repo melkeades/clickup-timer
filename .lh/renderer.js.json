@@ -3,11 +3,15 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 1,
             "patches": [
                 {
                     "date": 1767806374675,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1767846388661,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -92,9 +92,9 @@\n \r\n   // Filter by search text\r\n   let displayEntries = entries\r\n   if (searchText) {\r\n-    displayEntries = displayEntries.filter(entry => {\r\n+    displayEntries = displayEntries.filter((entry) => {\r\n       const name = (entry.task_name || '').toLowerCase()\r\n       return name.includes(searchText)\r\n     })\r\n   }\r\n@@ -254,9 +254,9 @@\n     if (currentTaskId) {\r\n       const current = entries.find((e) => e.task_id === currentTaskId)\r\n       const taskName = current?.task_name || currentEntry?.task_name || 'Unknown task'\r\n       statusEl.innerHTML = `<span class=\"current\"><button class=\"status-stop-btn\" id=\"status-stop-btn\" title=\"Stop timer\">⏹</button>${taskName}</span>`\r\n-      \r\n+\r\n       // Attach click handler to status stop button\r\n       const statusStopBtn = document.getElementById('status-stop-btn')\r\n       if (statusStopBtn) {\r\n         statusStopBtn.addEventListener('click', async () => {\r\n"
                 }
             ],
             "date": 1767806374675,

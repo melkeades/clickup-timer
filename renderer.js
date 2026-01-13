@@ -2,6 +2,7 @@ const taskListEl = document.getElementById('task-list')
 const statusEl = document.getElementById('status')
 const refreshTimerEl = document.getElementById('refresh-timer')
 const uniqueToggle = document.getElementById('unique-toggle')
+const searchInput = document.getElementById('search-input')
 
 let entries = []
 let currentTaskId = null
@@ -9,6 +10,7 @@ let refreshInterval = null
 let countdownInterval = null
 let nextRefresh = 0
 let hideDailyDuplicates = false
+let searchText = ''
 
 const REFRESH_MS = 3 * 60 * 1000 // 3 minutes
 
@@ -18,6 +20,13 @@ uniqueToggle.addEventListener('click', () => {
   uniqueToggle.classList.toggle('active', hideDailyDuplicates)
   renderTasks()
 })
+
+if (searchInput) {
+  searchInput.addEventListener('input', (e) => {
+    searchText = e.target.value.trim().toLowerCase()
+    renderTasks()
+  })
+}
 
 function formatTime(ms) {
   if (!ms) return '--:--'
@@ -32,6 +41,14 @@ function formatDuration(ms) {
   const minutes = Math.floor((totalSec % 3600) / 60)
   const seconds = totalSec % 60
   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+}
+
+function formatDurationShort(ms) {
+  if (!ms || ms < 0) return '0h 0m'
+  const totalMin = Math.floor(ms / 60000)
+  const hours = Math.floor(totalMin / 60)
+  const minutes = totalMin % 60
+  return `${hours}h ${minutes}m`
 }
 
 function formatCountdown(ms) {
@@ -65,11 +82,27 @@ function renderTasks() {
     return
   }
 
-  // Filter to unique tasks per day if toggle is on
+  // Calculate total duration per day from ALL entries (not filtered)
+  const dayTotals = new Map()
+  entries.forEach((entry) => {
+    const day = getPSTDateString(entry.startMs)
+    const current = dayTotals.get(day) || 0
+    dayTotals.set(day, current + (entry.duration || 0))
+  })
+
+  // Filter by search text
   let displayEntries = entries
+  if (searchText) {
+    displayEntries = displayEntries.filter((entry) => {
+      const name = (entry.task_name || '').toLowerCase()
+      return name.includes(searchText)
+    })
+  }
+
+  // Filter to unique tasks per day if toggle is on
   if (hideDailyDuplicates) {
     const seenPerDay = new Map() // day -> Set of task_ids
-    displayEntries = entries.filter((entry) => {
+    displayEntries = displayEntries.filter((entry) => {
       const day = getPSTDateString(entry.startMs)
       if (!seenPerDay.has(day)) {
         seenPerDay.set(day, new Set())
@@ -91,7 +124,8 @@ function renderTasks() {
 
     // Add day separator if day changed
     if (entryDay && entryDay !== lastDay) {
-      html += `<div class="day-separator"><span class="day-label">${entryDay}</span></div>`
+      const dayTotal = formatDurationShort(dayTotals.get(entryDay))
+      html += `<div class="day-separator"><span class="day-label">${entryDay} - ${dayTotal}</span></div>`
       lastDay = entryDay
     }
 
@@ -214,9 +248,30 @@ async function refreshEntries() {
 
     renderTasks()
 
+    // Update tray/taskbar indicators based on current state
+    await window.clickup.updateIndicators(!!currentTaskId)
+
     if (currentTaskId) {
       const current = entries.find((e) => e.task_id === currentTaskId)
-      statusEl.innerHTML = `<span class="current">▶ ${current?.task_name || 'Timer running'}</span>`
+      const taskName = current?.task_name || currentEntry?.task_name || 'Unknown task'
+      statusEl.innerHTML = `<span class="current"><button class="status-stop-btn" id="status-stop-btn" title="Stop timer">⏹</button>${taskName}</span>`
+
+      // Attach click handler to status stop button
+      const statusStopBtn = document.getElementById('status-stop-btn')
+      if (statusStopBtn) {
+        statusStopBtn.addEventListener('click', async () => {
+          statusStopBtn.disabled = true
+          statusStopBtn.textContent = '...'
+          try {
+            await window.clickup.stopTimer()
+            currentTaskId = null
+            await refreshEntries()
+          } catch (err) {
+            statusEl.textContent = `Error: ${err.message}`
+            statusEl.style.color = '#D0BCFF'
+          }
+        })
+      }
     } else {
       statusEl.textContent = 'No timer running'
     }

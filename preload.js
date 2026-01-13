@@ -7,5 +7,6 @@ contextBridge.exposeInMainWorld('clickup', {
   startTask: (tid) => ipcRenderer.invoke('clickup:startTask', tid),
   stopTimer: () => ipcRenderer.invoke('clickup:stopTimer'),
   deleteEntry: (entryId) => ipcRenderer.invoke('clickup:deleteEntry', entryId),
+  updateIndicators: (running) => ipcRenderer.invoke('clickup:updateIndicators', running),
   onStatus: (cb) => ipcRenderer.on('clickup:status', (_evt, payload) => cb(payload)),
 })

@@ -282,6 +282,10 @@ app.whenReady().then(() => {
     return await deleteEntry(entryId)
   })
 
+  ipcMain.handle('clickup:updateIndicators', async (_event, running) => {
+    setTimerIndicators({ running }, win)
+  })
+
   // Global hotkey (main process)
   const ok = globalShortcut.register('CommandOrControl+Shift+Alt+t', async () => {
     try {

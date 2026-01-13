@@ -41,6 +41,25 @@
         align-items: center;
         gap: 12px;
       }
+      .search-container {
+        display: flex;
+        align-items: center;
+        margin-right: 8px;
+      }
+      #search-input {
+        background: #2b2930;
+        color: #e6e1e5;
+        border: 1px solid #49454f;
+        border-radius: 6px;
+        padding: 6px 12px;
+        font-size: 13px;
+        outline: none;
+        transition: border-color 0.2s;
+        width: 180px;
+      }
+      #search-input:focus {
+        border-color: #d0bcff;
+      }
       .toggle-container {
         display: flex;
         align-items: center;
@@ -86,6 +105,30 @@
       }
       .status-bar .current {
         color: #4db6ac;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .status-stop-btn {
+        width: 20px;
+        height: 20px;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 10px;
+        background: #d0bcff;
+        color: #1c1b1f;
+        transition: transform 0.1s, background 0.2s;
+      }
+      .status-stop-btn:hover {
+        transform: scale(1.1);
+      }
+      .status-stop-btn:active {
+        transform: scale(0.95);
       }
       .task-list {
         height: calc(100vh - 90px);
@@ -242,6 +285,9 @@
     <div class="header">
       <h1>ClickUp Timer</h1>
       <div class="header-right">
+        <div class="search-container">
+          <input type="text" id="search-input" placeholder="Search task..." autocomplete="off" />
+        </div>
         <div class="toggle-container">
           <span>Unique/day</span>
           <div class="toggle-switch" id="unique-toggle" title="Show only unique tasks per day"></div>

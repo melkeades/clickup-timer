@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 2,
+            "activePatchIndex": 5,
             "patches": [
                 {
                     "date": 1767793515489,
@@ -16,6 +16,18 @@
                 {
                     "date": 1767806294573,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,8 +11,34 @@\n     \"dist:mac\": \"electron-builder --mac dmg --publish never\",\r\n     \"dist:win\": \"electron-builder --win portable --publish never\",\r\n     \"dist:linux\": \"electron-builder --linux deb --publish never\"\r\n   },\r\n+  \"build\": {\r\n+    \"appId\": \"com.yourcompany.clickup-timer\",\r\n+    \"productName\": \"ClickUp Timer Toggle\",\r\n+    \"directories\": {\r\n+      \"output\": \"dist\"\r\n+    },\r\n+    \"files\": [\r\n+      \"**/*\"\r\n+    ],\r\n+    \"mac\": {\r\n+      \"target\": [\r\n+        \"dmg\"\r\n+      ]\r\n+    },\r\n+    \"win\": {\r\n+      \"target\": [\r\n+        \"portable\"\r\n+      ]\r\n+    },\r\n+    \"linux\": {\r\n+      \"target\": [\r\n+        \"deb\"\r\n+      ],\r\n+      \"category\": \"Utility\"\r\n+    }\r\n+  },\r\n   \"devDependencies\": {\r\n     \"electron\": \"^latest\"\r\n   }\r\n }\r\n"
+                },
+                {
+                    "date": 1767806869071,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -38,8 +38,5 @@\n       ],\r\n       \"category\": \"Utility\"\r\n     }\r\n   },\r\n-  \"devDependencies\": {\r\n-    \"electron\": \"^latest\"\r\n-  }\r\n }\r\n"
+                },
+                {
+                    "date": 1767806904723,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,10 +3,9 @@\n   \"version\": \"1.0.0\",\r\n   \"main\": \"main.js\",\r\n   \"license\": \"MIT\",\r\n   \"dependencies\": {\r\n-    \"electron\": \"^39.2.7\",\r\n-    \"electron-builder\": \"^26.4.0\"\r\n+    \"electron\": \"^39.2.7\"\r\n   },\r\n   \"scripts\": {\r\n     \"start\": \"electron .\",\r\n     \"dist:mac\": \"electron-builder --mac dmg --publish never\",\r\n@@ -37,6 +36,12 @@\n         \"deb\"\r\n       ],\r\n       \"category\": \"Utility\"\r\n     }\r\n+  },\r\n+  \"devDependencies\": {\r\n+    \"electron\": \"^latest\",\r\n+    \"devDependencies\": {\r\n+      \"electron\": \"^latest\"\r\n+    }\r\n   }\r\n }\r\n"
+                },
+                {
+                    "date": 1767806932172,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,11 +2,8 @@\n   \"name\": \"clickup-timer\",\r\n   \"version\": \"1.0.0\",\r\n   \"main\": \"main.js\",\r\n   \"license\": \"MIT\",\r\n-  \"dependencies\": {\r\n-    \"electron\": \"^39.2.7\"\r\n-  },\r\n   \"scripts\": {\r\n     \"start\": \"electron .\",\r\n     \"dist:mac\": \"electron-builder --mac dmg --publish never\",\r\n     \"dist:win\": \"electron-builder --win portable --publish never\",\r\n"
                 }
             ],
             "date": 1767793515489,

@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "main": "main.js",
   "license": "MIT",
-  "dependencies": {
-    "electron": "^39.2.7"
-  },
   "scripts": {
     "start": "electron .",
     "dist:mac": "electron-builder --mac dmg --publish never",
@@ -39,6 +36,7 @@
     }
   },
   "devDependencies": {
-    "electron": "^latest"
+    "electron": "^39.2.7",
+    "electron-builder": "^26.4.0"
   }
 }
