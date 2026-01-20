@@ -137,6 +137,7 @@ function renderTasks() {
     const startTime = formatTime(entry.startMs)
     const endTime = entry.isRunning ? 'running' : formatTime(entry.endMs)
     const lasted = entry.isRunning ? 'tracking...' : formatDuration(entry.duration)
+    const billableIndicator = entry.billable ? '<span class="billable-badge">$</span>' : ''
 
     html += `
       <div class="${itemClass}" data-task-id="${entry.task_id}" data-entry-id="${entry.entry_id}">
@@ -144,7 +145,7 @@ function renderTasks() {
           ${btnIcon}
         </button>
         <div class="task-content">
-          <div class="task-name" title="${entry.task_name || 'Unknown task'}">${entry.task_name || 'Unknown task'}</div>
+          <div class="task-name" title="${entry.task_name || 'Unknown task'}">${entry.task_name || 'Unknown task'}${billableIndicator}</div>
           <div class="task-time">
             ${startTime} → ${endTime} • ${lasted}
           </div>

@@ -195,6 +195,7 @@ async function getTimeEntries() {
       endMs: parseEndMs(entry),
       duration: Math.abs(duration),
       isRunning,
+      billable: entry.billable === true,
     }
   })
 
