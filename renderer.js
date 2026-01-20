@@ -220,7 +220,11 @@ async function handleTaskClick(e) {
       await window.clickup.stopTimer()
       currentTaskId = null
     } else {
-      await window.clickup.startTask(taskId)
+      // Find the most recent entry for this task to get billable status
+      const taskEntries = entries.filter((e) => e.task_id === taskId)
+      const billable = taskEntries.length > 0 ? taskEntries[0].billable : true
+
+      await window.clickup.startTask(taskId, billable)
       currentTaskId = taskId
     }
     await refreshEntries()

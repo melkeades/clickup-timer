@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 1,
+            "activePatchIndex": 2,
             "patches": [
                 {
                     "date": 1767806374675,
@@ -12,6 +12,10 @@
                 {
                     "date": 1767846388661,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -92,9 +92,9 @@\n \r\n   // Filter by search text\r\n   let displayEntries = entries\r\n   if (searchText) {\r\n-    displayEntries = displayEntries.filter(entry => {\r\n+    displayEntries = displayEntries.filter((entry) => {\r\n       const name = (entry.task_name || '').toLowerCase()\r\n       return name.includes(searchText)\r\n     })\r\n   }\r\n@@ -254,9 +254,9 @@\n     if (currentTaskId) {\r\n       const current = entries.find((e) => e.task_id === currentTaskId)\r\n       const taskName = current?.task_name || currentEntry?.task_name || 'Unknown task'\r\n       statusEl.innerHTML = `<span class=\"current\"><button class=\"status-stop-btn\" id=\"status-stop-btn\" title=\"Stop timer\">⏹</button>${taskName}</span>`\r\n-      \r\n+\r\n       // Attach click handler to status stop button\r\n       const statusStopBtn = document.getElementById('status-stop-btn')\r\n       if (statusStopBtn) {\r\n         statusStopBtn.addEventListener('click', async () => {\r\n"
+                },
+                {
+                    "date": 1768873903666,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -220,11 +220,11 @@\n       await window.clickup.stopTimer()\r\n       currentTaskId = null\r\n     } else {\r\n       // Find the most recent entry for this task to get billable status\r\n-      const taskEntries = entries.filter(e => e.task_id === taskId)\r\n+      const taskEntries = entries.filter((e) => e.task_id === taskId)\r\n       const billable = taskEntries.length > 0 ? taskEntries[0].billable : true\r\n-      \r\n+\r\n       await window.clickup.startTask(taskId, billable)\r\n       currentTaskId = taskId\r\n     }\r\n     await refreshEntries()\r\n"
                 }
             ],
             "date": 1767806374675,

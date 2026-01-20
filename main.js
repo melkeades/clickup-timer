@@ -130,9 +130,10 @@ async function toggleClickupTimer() {
   candidates.sort((a, b) => parseStartMs(b) - parseStartMs(a))
   const last = candidates[0]
   const tid = taskId(last)
+  const billable = last.billable === true
 
-  // POST /team/{team_id}/time_entries/start with {"tid": "<task_id>"}
-  const started = await clickupFetch('POST', `${BASE}/team/${teamId}/time_entries/start`, { tid })
+  // POST /team/{team_id}/time_entries/start with {"tid": "<task_id>", "billable": boolean}
+  const started = await clickupFetch('POST', `${BASE}/team/${teamId}/time_entries/start`, { tid, billable })
 
   return {
     action: 'started',
@@ -219,7 +220,7 @@ async function getCurrentEntry() {
   }
 }
 
-async function startTask(tid) {
+async function startTask(tid, billable = true) {
   const teamId = mustEnv('CLICKUP_TEAM_ID')
 
   // First stop any running timer
@@ -228,8 +229,8 @@ async function startTask(tid) {
     await clickupFetch('POST', `${BASE}/team/${teamId}/time_entries/stop`)
   }
 
-  // Start the new task
-  const started = await clickupFetch('POST', `${BASE}/team/${teamId}/time_entries/start`, { tid })
+  // Start the new task with billable status
+  const started = await clickupFetch('POST', `${BASE}/team/${teamId}/time_entries/start`, { tid, billable })
   return {
     action: 'started',
     task_id: taskId(started?.data) ?? tid,
@@ -267,8 +268,8 @@ app.whenReady().then(() => {
     return await getCurrentEntry()
   })
 
-  ipcMain.handle('clickup:startTask', async (_event, tid) => {
-    const result = await startTask(tid)
+  ipcMain.handle('clickup:startTask', async (_event, tid, billable) => {
+    const result = await startTask(tid, billable)
     setTimerIndicators({ running: true }, win)
     return result
   })
